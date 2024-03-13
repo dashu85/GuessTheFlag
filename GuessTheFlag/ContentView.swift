@@ -16,7 +16,11 @@ struct ContentView: View {
     
     @State private var score = 0
     
-    @State private var positionflagTapped = 0
+    @State private var positionFlagTapped = 0
+    
+    @State private var gamesPlayed = 1
+    
+    @State private var alertMessage = ""
     
     var body: some View {
         ZStack {
@@ -31,16 +35,19 @@ struct ContentView: View {
                     .font(.largeTitle.bold())
                 VStack (spacing: 20) {
                                 VStack {
-                                    Text("Please tap the flag of")
+                                    Text("Question \(gamesPlayed) of 8")
+                                        .padding()
+                                        .foregroundColor(.black)
+                                    Text("Please tap on the flag of")
                                         .font(.subheadline.weight(.heavy))
                                         .foregroundStyle(.black)
-                                    Text(countries[correctAnswer])  // choose this flag!
+                                    Text(countries[correctAnswer])  // Tap on this flag!
                                         .font(.largeTitle.weight(.semibold))
                                         .foregroundStyle(.black)
                                 }
                                 ForEach(0..<3) { number in
                                     Button {
-                                        positionflagTapped = number
+                                        positionFlagTapped = number
                                         flagTapped(number)
                                     } label: {
                                         Image(countries[number])
@@ -64,25 +71,30 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is \(score)")
+            Text("\(alertMessage)")
         }
     }
     
     // setting scoreTitle for the alert message
     func flagTapped(_ number: Int) {
-        if number == correctAnswer {
-            scoreTitle = "Correct!"
-            score += 1
-        } else {
-            scoreTitle = """
-                        Sorry, that was
-                        the flag of \(countries[positionflagTapped])!
-                        """
-            if score > 0 {
-                score = score
+        // checking i
+        if gamesPlayed < 9 {
+            if number == correctAnswer {
+                scoreTitle = "Correct!"
+                alertMessage = ""
+                score += 1
+                if gamesPlayed == 8 { resetGame() }
             } else {
-                score = 0
+                scoreTitle = "WRONG!"
+                if gamesPlayed == 8 {
+                    resetGame()
+                } else {
+                    alertMessage = "That was \(countries[positionFlagTapped])'s flag"
+                }
             }
+        } else {
+            scoreTitle = "Your final result is \(score)!"
+            resetGame()
         }
         
         showingScore = true
@@ -92,6 +104,19 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        if gamesPlayed == 8 {
+            gamesPlayed = 1
+            score = 0
+        } else {
+            gamesPlayed += 1
+        }
+    }
+    
+    func resetGame() {
+        alertMessage =  """
+                        Final score: \(score)
+                        Let's do it again!
+                        """
     }
 }
 
