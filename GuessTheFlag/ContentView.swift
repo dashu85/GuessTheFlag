@@ -16,17 +16,20 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(colors: [.yellow, .black], startPoint: .top, endPoint: .bottom)
+            RadialGradient(stops: [
+                .init(color: Color(red: 0.992, green: 0.882, blue: 0), location: 0.3),
+                .init(color: Color(red: 0, green: 0, blue: 0), location: 0.3),
+            ], center: .top, startRadius: 200, endRadius: 700)
                 .ignoresSafeArea()
-            VStack (spacing: 30) {
+            VStack (spacing: 20) {
                 VStack {
                     Text("Tap the flag of")
                         .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.black)
                         .padding()
                     Text(countries[correctAnswer])
                         .font(.largeTitle.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.black)
                         .padding()
                 }
                 ForEach(0..<3) { number in
@@ -34,11 +37,14 @@ struct ContentView: View {
                         flagTapped(number)
                     } label: {
                         Image(countries[number])
-                            .clipShape(.buttonBorder)
+                            .clipShape(.rect(cornerRadius: 10))
                             .shadow(radius: 5)
                     }
                 }
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .clipShape(.rect(cornerRadius: 20))
         }
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
