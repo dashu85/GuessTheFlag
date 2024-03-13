@@ -46,6 +46,8 @@ struct ContentView: View {
             Text("Your score is ???")
         }
     }
+    
+    // setting scoreTitle for the alert message
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct!"
@@ -56,6 +58,7 @@ struct ContentView: View {
         showingScore = true
     }
     
+    // preparing the new round
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
