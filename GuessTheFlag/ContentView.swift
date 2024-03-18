@@ -17,9 +17,7 @@ struct ContentView: View {
     @State private var score = 0
     
     @State private var positionFlagTapped = 0
-    
     @State private var gamesPlayed = 1
-    
     @State private var alertMessage = ""
     
     var body: some View {
@@ -33,6 +31,7 @@ struct ContentView: View {
                 Spacer()
                 Text("Guess the Flag")
                     .font(.largeTitle.bold())
+                    .foregroundColor(.black)
                 VStack (spacing: 20) {
                                 VStack {
                                     Text("Question \(gamesPlayed) of 8")
@@ -50,9 +49,10 @@ struct ContentView: View {
                                         positionFlagTapped = number
                                         flagTapped(number)
                                     } label: {
-                                        Image(countries[number])
-                                            .clipShape(.rect(cornerRadius: 10))
-                                            .shadow(radius: 5)
+//                                        Image(countries[number])
+//                                            .clipShape(.rect(cornerRadius: 10))
+//                                            .shadow(radius: 5)
+                                        FlagImage(number: countries[number]) // Challenge 2 Project 3 - modified Image view with customised modifiers, see struct FlagImage()
                                     }
                                 }
                             }
@@ -60,10 +60,8 @@ struct ContentView: View {
                             .padding(.vertical, 20)
                             .clipShape(.rect(cornerRadius: 20))
                 Spacer()
-                Text("Score: \(score)")
-                    .foregroundStyle(Color(red: 0.992, green: 0.882, blue: 0))
-                    .font(.title.bold())
-                    .padding()
+                Text("Score: \(score)") // Challenge 3 - Project 3: Customized ViewModifier with View extension
+                    .scoreModifier()
                 Spacer()
             }
             
@@ -117,6 +115,35 @@ struct ContentView: View {
                         Final score: \(score)
                         Let's do it again!
                         """
+    }
+}
+
+// Challenge 2 - Project 3: new FlagImage view to replace the existing Image view and replace it with custom modifiers
+struct FlagImage: View {
+    let number: String
+    
+    var body: some View {
+        Image(number)
+            .clipShape(.rect(cornerRadius: 10))
+            .shadow(radius: 5)
+    }
+}
+
+// Challenge 3 - Project 3: new ViewModifier with an extension for View
+struct ScoreModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        ZStack(alignment: .center) {
+            content
+                .foregroundStyle(Color(red: 0.992, green: 0.882, blue: 0))
+                .font(.title.bold())
+                .padding()
+        }
+    }
+}
+
+extension View {
+    func scoreModifier() -> some View {
+        modifier(ScoreModifier())
     }
 }
 
