@@ -11,6 +11,20 @@ struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "Ukraine", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     
+    let labels = [
+        "Estonia": "Flag with three horizontal stripes. Top stripe blue, middle stripe black, bottom stripe white.",
+        "France": "Flag with three vertical stripes. Left stripe blue, middle stripe white, right stripe red.",
+        "Germany": "Flag with three horizontal stripes. Top stripe black, middle stripe red, bottom stripe gold.",
+        "Ireland": "Flag with three vertical stripes. Left stripe green, middle stripe white, right stripe orange.",
+        "Italy": "Flag with three vertical stripes. Left stripe green, middle stripe white, right stripe red.",
+        "Nigeria": "Flag with three vertical stripes. Left stripe green, middle stripe white, right stripe green.",
+        "Poland": "Flag with two horizontal stripes. Top stripe white, bottom stripe red.",
+        "Spain": "Flag with three horizontal stripes. Top thin stripe red, middle thick stripe gold with a crest on the left, bottom thin stripe red.",
+        "UK": "Flag with overlapping red and white crosses, both straight and diagonally, on a blue background.",
+        "Ukraine": "Flag with two horizontal stripes. Top stripe blue, bottom stripe yellow.",
+        "US": "Flag with many red and white stripes, with white stars on a blue background in the top-left corner."
+    ]
+    
     @State private var showingScore = false
     @State private var scoreTitle = ""
     
@@ -19,6 +33,8 @@ struct ContentView: View {
     @State private var positionFlagTapped = 0
     @State private var gamesPlayed = 1
     @State private var alertMessage = ""
+    
+    @State private var animationAmount = 0.0
     
     var body: some View {
         ZStack {
@@ -48,20 +64,31 @@ struct ContentView: View {
                                     Button {
                                         positionFlagTapped = number
                                         flagTapped(number)
+                                        withAnimation(.spring(bounce: 0.5)) {
+                                            animationAmount += 360
+                                        }
                                     } label: {
 //                                        Image(countries[number])
 //                                            .clipShape(.rect(cornerRadius: 10))
 //                                            .shadow(radius: 5)
-                                        FlagImage(number: countries[number]) // Challenge 2 Project 3 - modified Image view with customised modifiers, see struct FlagImage()
+                                        FlagImage(number: countries[number])
+                                            .rotation3DEffect(
+                                                .degrees(animationAmount),
+                                                axis: (x: 0, y: 1, z: 1)
+                                            )// Challenge 2 Project 3 - modified Image view with customised modifiers, see struct FlagImage()
                                     }
+                                    .accessibilityLabel(labels[countries[number], default: "Unknown flag"])
                                 }
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
                             .clipShape(.rect(cornerRadius: 20))
+                
                 Spacer()
+                
                 Text("Score: \(score)") // Challenge 3 - Project 3: Customized ViewModifier with View extension
                     .scoreModifier()
+                
                 Spacer()
             }
             
@@ -78,6 +105,7 @@ struct ContentView: View {
         // checking i
         if gamesPlayed < 9 {
             if number == correctAnswer {
+                animationAmount += 360
                 scoreTitle = "Correct!"
                 alertMessage = ""
                 score += 1
